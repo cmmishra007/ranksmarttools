@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RankSmart Tools: small online tools for everyday jobs</title>
+<meta name="description" content="Resize images, tidy JSON, count words, work out an EMI. Pick a tool, do the job, move on.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --bg: #FFF9EC;
+    --hero: #FFCE3A;
+    --ink: #2A1F4D;
+    --ink-soft: #5B5080;
+    --surface: #FFFFFF;
+    --line: #2A1F4D;
+    --accent: #FF5E8A;
+    --accent-ink: #FFFFFF;
+    --t-sun: #FFE38A;
+    --t-pink: #FFC2D4;
+    --t-mint: #B8EBD6;
+    --t-lilac: #D9CCFF;
+    --t-sky: #BFE3FF;
+    --t-peach: #FFD3B0;
+    --chip: rgba(255,255,255,.75);
+    --chip-hover: #2A1F4D;
+    --chip-hover-ink: #FFF9EC;
+    --shadow: #2A1F4D;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1C1533;
+      --hero: #3A2A78;
+      --ink: #FFF3D6;
+      --ink-soft: #C9BFEA;
+      --surface: #2A2050;
+      --line: #FFF3D6;
+      --accent: #FF7DA1;
+      --accent-ink: #2A1F4D;
+      --t-sun: #6B5312;
+      --t-pink: #6E2A48;
+      --t-mint: #1E5A48;
+      --t-lilac: #4A3A8C;
+      --t-sky: #1F4F7A;
+      --t-peach: #7A4020;
+      --chip: rgba(28,21,51,.55);
+      --chip-hover: #FFF3D6;
+      --chip-hover-ink: #1C1533;
+      --shadow: #000000;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1C1533;
+    --hero: #3A2A78;
+    --ink: #FFF3D6;
+    --ink-soft: #C9BFEA;
+    --surface: #2A2050;
+    --line: #FFF3D6;
+    --accent: #FF7DA1;
+    --accent-ink: #2A1F4D;
+    --t-sun: #6B5312;
+    --t-pink: #6E2A48;
+    --t-mint: #1E5A48;
+    --t-lilac: #4A3A8C;
+    --t-sky: #1F4F7A;
+    --t-peach: #7A4020;
+    --chip: rgba(28,21,51,.55);
+    --chip-hover: #FFF3D6;
+    --chip-hover-ink: #1C1533;
+    --shadow: #000000;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { height: auto; scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Nunito", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: "Fredoka", "Nunito", system-ui, sans-serif; line-height: 1.05; margin: 0; letter-spacing: -0.01em; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 22px; }
+
+  /* Hero */
+  .hero { background: var(--hero); border-radius: 0 0 56px 56px; padding: 22px 0 84px; position: relative; overflow: hidden; }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 56px; }
+  .brand { font-family: "Fredoka", sans-serif; font-weight: 700; font-size: 1.4rem; text-decoration: none; display: inline-flex; align-items: center; gap: 10px; }
+  .brand .mark { width: 34px; height: 34px; border-radius: 12px 12px 12px 4px; background: var(--ink); color: var(--hero); display: grid; place-items: center; font-size: 1.1rem; }
+  .btn {
+    display: inline-block; font-family: "Fredoka", sans-serif; font-weight: 600; font-size: 1.05rem;
+    background: var(--accent); color: var(--accent-ink); text-decoration: none;
+    padding: 13px 24px; border-radius: 999px; border: 2.5px solid var(--line);
+    box-shadow: 4px 4px 0 var(--shadow);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--shadow); }
+  .btn.small { padding: 8px 18px; font-size: .95rem; box-shadow: 3px 3px 0 var(--shadow); }
+  .btn.plain { background: transparent; color: var(--ink); box-shadow: none; }
+  .btn.plain:hover { background: var(--ink); color: var(--hero); transform: none; }
+
+  .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(2.6rem, 6.4vw, 4.8rem); font-weight: 700; }
+  .hero p.lead { font-size: 1.2rem; max-width: 34ch; margin: 22px 0 30px; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+  .hero .blob { position: absolute; border-radius: 50%; pointer-events: none; opacity: .55; }
+  .blob.b1 { width: 260px; height: 260px; background: var(--t-pink); right: -70px; top: -80px; }
+  .blob.b2 { width: 140px; height: 140px; background: var(--t-mint); left: -40px; bottom: -40px; }
+
+  /* Live counter */
+  .counter {
+    background: var(--surface); border: 3px solid var(--line); border-radius: 36px 36px 36px 10px;
+    padding: 22px; box-shadow: 8px 8px 0 var(--shadow); position: relative; z-index: 1;
+    animation: drop .7s cubic-bezier(.3,1.5,.5,1) both;
+  }
+  @keyframes drop { from { transform: translateY(-26px) rotate(-3deg); opacity: 0; } to { transform: none; opacity: 1; } }
+  .counter h2 { font-size: 1.35rem; margin-bottom: 4px; }
+  .counter .hint { margin: 0 0 12px; font-size: .95rem; color: var(--ink-soft); }
+  .counter textarea {
+    width: 100%; min-height: 128px; resize: vertical; font: inherit; color: var(--ink);
+    background: var(--bg); border: 2.5px solid var(--line); border-radius: 18px; padding: 14px 16px;
+  }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .stat { background: var(--t-sun); border-radius: 16px; padding: 10px 12px; text-align: center; }
+  .stat:nth-child(2) { background: var(--t-mint); }
+  .stat:nth-child(3) { background: var(--t-lilac); }
+  .stat b { display: block; font-family: "Fredoka", sans-serif; font-size: 1.8rem; line-height: 1.1; }
+  .stat span { font-size: .85rem; color: var(--ink); }
+  .stat b.pop { animation: pop .25s ease; }
+  @keyframes pop { 50% { transform: scale(1.18); } }
+  .counter .more { display: inline-block; margin-top: 14px; font-weight: 700; }
+
+  /* Finder */
+  .finder { margin-top: -30px; position: relative; z-index: 2; }
+  .finder-box {
+    background: var(--surface); border: 3px solid var(--line); border-radius: 999px; box-shadow: 6px 6px 0 var(--shadow);
+    display: flex; align-items: center; gap: 12px; padding: 8px 10px 8px 24px; max-width: 640px; margin: 0 auto;
+  }
+  .finder-box label { font-family: "Fredoka", sans-serif; font-weight: 600; white-space: nowrap; }
+  .finder-box input { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: transparent; border: 0; padding: 12px 6px; }
+  .finder-box input:focus-visible { outline: none; }
+  .finder-box:focus-within { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  /* Sections */
+  section.tools { padding: 64px 0 24px; }
+  .section-head { margin-bottom: 30px; max-width: 46ch; }
+  .section-head h2 { font-size: clamp(2rem, 4.4vw, 3rem); font-weight: 700; }
+  .section-head p { color: var(--ink-soft); margin: 12px 0 0; }
+
+  .grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 22px; }
+  .tile {
+    grid-column: span 3; padding: 26px 26px 28px; border: 3px solid var(--line);
+    background: var(--t-sun); color: var(--ink);
+  }
+  .tile.w4 { grid-column: span 4; }
+  .tile.w2 { grid-column: span 2; }
+  .tile.r1 { border-radius: 36px 36px 36px 10px; }
+  .tile.r2 { border-radius: 36px 10px 36px 36px; }
+  .tile.r3 { border-radius: 10px 36px 36px 36px; }
+  .tile.r4 { border-radius: 36px 36px 10px 36px; }
+  .tile .emoji { font-size: 1.8rem; display: block; margin-bottom: 8px; }
+  .tile h3 { font-size: 1.6rem; font-weight: 700; }
+  .tile p { margin: 8px 0 18px; max-width: 44ch; }
+  .tile[hidden] { display: none; }
+  .c-sun { background: var(--t-sun); }
+  .c-pink { background: var(--t-pink); }
+  .c-mint { background: var(--t-mint); }
+  .c-lilac { background: var(--t-lilac); }
+  .c-sky { background: var(--t-sky); }
+  .c-peach { background: var(--t-peach); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .chips li[hidden] { display: none; }
+  .chips a {
+    display: inline-block; padding: 6px 14px; border-radius: 999px; background: var(--chip);
+    border: 2px solid var(--line); font-weight: 700; font-size: .95rem; text-decoration: none;
+    transition: background .12s ease, color .12s ease;
+  }
+  .chips a:hover { background: var(--chip-hover); color: var(--chip-hover-ink); }
+
+  .empty { display: none; text-align: center; padding: 40px 0; color: var(--ink-soft); font-size: 1.1rem; }
+  .empty.show { display: block; }
+
+  /* Closer */
+  .closer { margin: 72px 0 0; padding: 0 0 64px; }
+  .closer-card {
+    background: var(--t-pink); border: 3px solid var(--line); border-radius: 48px 48px 48px 12px;
+    padding: 44px 32px; text-align: center; box-shadow: 8px 8px 0 var(--shadow);
+  }
+  .closer-card h2 { font-size: clamp(1.9rem, 4.2vw, 2.8rem); font-weight: 700; max-width: 20ch; margin: 0 auto 12px; }
+  .closer-card p { margin: 0 auto 26px; max-width: 42ch; }
+
+  footer { padding: 0 0 42px; text-align: center; color: var(--ink-soft); font-size: .95rem; }
+  footer a { font-weight: 700; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero { border-radius: 0 0 40px 40px; padding-bottom: 70px; }
+    .tile, .tile.w4, .tile.w2 { grid-column: span 6; }
+    .nav { margin-bottom: 36px; }
+  }
+  @media (max-width: 520px) {
+    .finder-box { border-radius: 32px; padding-left: 18px; }
+    .finder-box label { display: none; }
+    .stat b { font-size: 1.4rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .counter { animation: none; }
+    .stat b.pop { animation: none; }
+    html { scroll-behavior: auto; }
+    .btn, .chips a { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="blob b1" aria-hidden="true"></div>
+  <div class="blob b2" aria-hidden="true"></div>
+  <div class="wrap">
+    <nav class="nav" aria-label="Main">
+      <a class="brand" href="https://www.ranksmarttools.com/"><span class="mark" aria-hidden="true">R</span>RankSmart Tools</a>
+      <a class="btn small plain" href="#tools">See the tools</a>
+    </nav>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Small tools for the jobs you keep putting off.</h1>
+        <p class="lead">Resize an image, tidy some JSON, work out an EMI. Open a tool, do the thing, get on with your day.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#tools">Find a tool</a>
+          <a class="btn plain" href="https://www.ranksmarttools.com/">Go to RankSmart Tools</a>
+        </div>
+      </div>
+
+      <div class="counter">
+        <h2>Try one right now</h2>
+        <p class="hint">Paste or type anything. The word counter keeps up.</p>
+        <label for="sample" class="sr" style="position:absolute;left:-9999px">Text to count</label>
+        <textarea id="sample" placeholder="Start typing here…">The quick brown fox jumps over the lazy dog.</textarea>
+        <div class="stats" aria-live="polite">
+          <div class="stat"><b id="words">0</b><span>words</span></div>
+          <div class="stat"><b id="chars">0</b><span>characters</span></div>
+          <div class="stat"><b id="read">0</b><span>min to read</span></div>
+        </div>
+        <a class="more" href="https://www.ranksmarttools.com/tools/word-counter">Open the full word counter</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="finder">
+  <div class="wrap">
+    <div class="finder-box">
+      <label for="q">Looking for</label>
+      <input id="q" type="search" placeholder="json, image, loan, qr code…" autocomplete="off">
+    </div>
+  </div>
+</div>
+
+<main>
+  <section class="tools" id="tools">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Pick a shelf</h2>
+        <p>Tools are grouped by the job they do. Tap any name to open it, or search above.</p>
+      </div>
+
+      <div class="grid" id="grid"></div>
+      <p class="empty" id="empty">Nothing matches that yet. Try a shorter word, like “json” or “image”.</p>
+    </div>
+  </section>
+
+  <section class="closer">
+    <div class="wrap">
+      <div class="closer-card">
+        <h2>Still not sure where to start?</h2>
+        <p>Everything lives on one site, so the full list is a single click away.</p>
+        <a class="btn" href="https://www.ranksmarttools.com/">Browse RankSmart Tools</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">RankSmart Tools · <a href="https://www.ranksmarttools.com/">ranksmarttools.com</a></div>
+</footer>
+
+<script>
+  var SHELVES = [
+    { title: "Images", emoji: "🖼️", color: "c-pink", size: "w4", radius: "r1",
+      blurb: "Make a picture the right size, shape and weight.",
+      tools: [["Image resizer","image-resizer"],["Image compressor","image-compressor"],["Bulk image resizer","bulk-image-resizer"],["Image cropper","image-cropper"],["Image rotate","image-rotate"],["Image flipper","image-flipper"],["Image converter","image-converter"]] },
+    { title: "Words", emoji: "✍️", color: "c-sun", size: "w2", radius: "r2",
+      blurb: "Count what you wrote.",
+      tools: [["Word counter","word-counter"],["Character counter","character-counter"],["Reading time calculator","reading-time-calculator"]] },
+    { title: "Formatters", emoji: "🧹", color: "c-lilac", size: "", radius: "r3",
+      blurb: "Tidy, check and shrink code and data.",
+      tools: [["JSON formatter","json-formatter"],["JSON validator","json-validator"],["JSON minify","json-minify"],["JSON compare","json-compare"],["JSON repair","json-repair"],["XML formatter","xml-formatter"],["YAML formatter","yaml-formatter"],["CSV viewer","csv-viewer"],["HTML formatter","html-formatter"],["CSS minifier","css-minifier"],["JavaScript beautifier","javascript-beautifier"],["Markdown formatter","markdown-formatter"],["GraphQL formatter","graphql-formatter"]] },
+    { title: "Converters", emoji: "🔁", color: "c-mint", size: "", radius: "r4",
+      blurb: "Turn one format into another.",
+      tools: [["JSON to CSV","json-to-csv"],["JSON to YAML","json-to-yaml"],["JSON to XML","json-to-xml"],["XML to JSON","xml-to-json"],["YAML to JSON","yaml-to-json"],["CSV to JSON","csv-to-json"],["CSV to HTML","csv-to-html"],["JSON to TypeScript","json-to-typescript"],["JSON to Python","json-to-python"],["Base64 encode","base64-encode"],["Base64 decode","base64-decode"],["URL encoder","url-encoder"],["URL decoder","url-decoder"],["SCSS to CSS","scss-to-css"],["LESS to CSS","less-to-css"]] },
+    { title: "Money", emoji: "💸", color: "c-peach", size: "w2", radius: "r1",
+      blurb: "Loans, savings and the sums in between.",
+      tools: [["EMI calculator","emi-calculator"],["Loan affordability","loan-affordability-calculator"],["Loan comparison","loan-comparison-calculator"],["Compound interest","compound-interest-calculator"],["GST and margin planner","gst-calculator-and-margin-planner"],["Retirement calculator","retirement-calculator"],["Financial goal planner","financial-goal-planner"],["Emergency fund check","financial-health-and-emergency-fund-check"]] },
+    { title: "Websites and SEO", emoji: "🔎", color: "c-sky", size: "w4", radius: "r2",
+      blurb: "Check a page, write the tags, see how old a domain is.",
+      tools: [["SEO audit scanner","seo-audit-scanner"],["Meta tags analyzer","meta-tags-analyzer"],["Meta tag generator","meta-tag-generator"],["Keyword density checker","keyword-density-checker"],["Robots.txt generator","robots-txt-generator"],["SEO slug generator","seo-slug-generator"],["Canonical tag generator","canonical-tag-generator"],["Hreflang generator","hreflang-generator"],["Domain age checker","domain-age-checker"],["Check server status","check-server-status"]] },
+    { title: "Profile pictures and thumbnails", emoji: "📸", color: "c-lilac", size: "w4", radius: "r3",
+      blurb: "Get the right size for each platform, first time.",
+      tools: [["Instagram profile picture","instagram-profile-picture-generator"],["Instagram thumbnail","instagram-thumbnail-generator"],["YouTube profile picture","youtube-profile-picture-generator"],["YouTube thumbnail","youtube-thumbnail-generator"],["Facebook profile picture","facebook-profile-picture-generator"],["Facebook thumbnail","facebook-thumbnail-generator"],["LinkedIn profile picture","linkedin-profile-picture-generator"],["LinkedIn thumbnail","linkedin-thumbnail-generator"],["X profile picture","x-profile-picture-generator"],["X thumbnail","x-thumbnail-generator"],["Pinterest profile picture","pinterest-profile-picture-generator"],["Pinterest thumbnail","pinterest-thumbnail-generator"],["GitHub profile picture","github-profile-picture-generator"],["GitHub thumbnail","github-thumbnail-generator"],["WhatsApp profile picture","whatsapp-profile-picture-generator"],["WhatsApp thumbnail","whatsapp-thumbnail-generator"],["Telegram profile picture","telegram-profile-picture-generator"],["Telegram thumbnail","telegram-thumbnail-generator"]] },
+    { title: "Invoices and QR codes", emoji: "🧾", color: "c-mint", size: "w2", radius: "r4",
+      blurb: "Bill someone, or point them somewhere.",
+      tools: [["Free invoice generator","free-invoice-generator"],["Free QR code generator","free-qr-code-generator"]] }
+  ];
+
+  var grid = document.getElementById("grid");
+  var BASE = "https://www.ranksmarttools.com/tools/";
+
+  SHELVES.forEach(function (s) {
+    var tile = document.createElement("article");
+    tile.className = "tile " + s.color + " " + s.radius + (s.size ? " " + s.size : "");
+    var html = '<span class="emoji" aria-hidden="true">' + s.emoji + '</span><h3>' + s.title + '</h3><p>' + s.blurb + '</p><ul class="chips">';
+    s.tools.forEach(function (t) {
+      html += '<li data-text="' + (t[0] + " " + s.title).toLowerCase() + '"><a href="' + BASE + t[1] + '">' + t[0] + '</a></li>';
+    });
+    html += "</ul>";
+    tile.innerHTML = html;
+    grid.appendChild(tile);
+  });
+
+  /* Search */
+  var q = document.getElementById("q");
+  var empty = document.getElementById("empty");
+  q.addEventListener("input", function () {
+    var term = q.value.trim().toLowerCase();
+    var anyVisible = false;
+    grid.querySelectorAll(".tile").forEach(function (tile) {
+      var shown = 0;
+      tile.querySelectorAll("li").forEach(function (li) {
+        var match = !term || li.getAttribute("data-text").indexOf(term) !== -1;
+        li.hidden = !match;
+        if (match) shown++;
+      });
+      tile.hidden = shown === 0;
+      if (shown) anyVisible = true;
+    });
+    empty.classList.toggle("show", !anyVisible);
+  });
+
+  /* Live counter */
+  var sample = document.getElementById("sample");
+  var els = { words: document.getElementById("words"), chars: document.getElementById("chars"), read: document.getElementById("read") };
+  var last = {};
+  function setStat(key, value) {
+    if (last[key] === value) return;
+    last[key] = value;
+    els[key].textContent = value;
+    els[key].classList.remove("pop");
+    void els[key].offsetWidth;
+    els[key].classList.add("pop");
+  }
+  function update() {
+    var text = sample.value;
+    var trimmed = text.trim();
+    var words = trimmed ? trimmed.split(/\s+/).length : 0;
+    setStat("words", words);
+    setStat("chars", text.length);
+    setStat("read", words === 0 ? "0" : (words < 200 ? "<1" : String(Math.round(words / 200))));
+  }
+  sample.addEventListener("input", update);
+  update();
+</script>
+</body>
+</html>
